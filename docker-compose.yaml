@@ -1,0 +1,116 @@
+version: '3.8'
+
+services:
+  discovery-app:
+    container_name: discovery-server
+    image: moussakhalil/discovery-server
+    ports:
+      - 8761:8761
+    networks:
+      - microservices-poc
+
+  gateway-app:
+    container_name: gateway-server
+    image: moussakhalil/gateway-server
+    ports:
+      - 4000:4000
+    networks:
+      - microservices-poc
+
+  person-identity-app:
+    container_name: person-identity-app
+    image: moussakhalil/person-identity
+    ports:
+      - 3000:3000
+    environment:
+      MYSQL_HOST: person_db
+      MYSQL_USER: moussa
+      MYSQL_PASSWORD: password
+      MYSQL_PORT: 3306
+    depends_on:
+      - person_db
+    networks:
+      - microservices-poc
+
+  person_db:
+    image: mysql:5.7.24
+    environment:
+      DATABASE_HOST: docker-mysql
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: person-service-DB
+      MYSQL_USER: moussa
+      MYSQL_PASSWORD: password
+    ports:
+      - 3309:3306
+    networks:
+      - microservices-poc
+    volumes:
+      - person_db:/var/lib/mysql
+
+  course-app:
+    container_name: course-app
+    image: moussakhalil/course
+    ports:
+      - 2000:2000
+    environment:
+      MYSQL_HOST: course_db
+      MYSQL_USER: moussa
+      MYSQL_PASSWORD: password
+      MYSQL_PORT: 3306
+    depends_on:
+      - course_db
+    networks:
+      - microservices-poc
+
+  course_db:
+    image: mysql:5.7.24
+    environment:
+      DATABASE_HOST: docker-mysql
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: course-service-DB
+      MYSQL_USER: moussa
+      MYSQL_PASSWORD: password
+    ports:
+      - 3310:3306
+    networks:
+      - microservices-poc
+    volumes:
+      - course_db:/var/lib/mysql
+
+  enrollment-app:
+    container_name: enrollment-app
+    image: moussakhalil/enrollment
+    ports:
+      - 5000:5000
+    environment:
+      MYSQL_HOST: enrollment_db
+      MYSQL_USER: moussa
+      MYSQL_PASSWORD: password
+      MYSQL_PORT: 3306
+    depends_on:
+      - enrollment_db
+    networks:
+      - microservices-poc
+
+  enrollment_db:
+    image: mysql:5.7.24
+    environment:
+      DATABASE_HOST: docker-mysql
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: enrollment-service-DB
+      MYSQL_USER: moussa
+      MYSQL_PASSWORD: password
+    ports:
+      - 3320:3306
+    networks:
+      - microservices-poc
+    volumes:
+      - enrollment_db:/var/lib/mysql
+
+networks:
+  microservices-poc:
+
+volumes:
+  person_db:
+  course_db:
+  enrollment_db:

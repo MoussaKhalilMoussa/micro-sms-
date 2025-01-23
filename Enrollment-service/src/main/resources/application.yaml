@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: enrollment-service
+
+  datasource:
+    #url: jdbc:mysql://localhost:3306/person-service-DB?autoReconnect=true&allowPublicKeyRetrieval=true&useSSL=false
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/enrollment-service-DB?autoReconnect=true&allowPublicKeyRetrieval=true&useSSL=false
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:password}
+    #driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+server:
+  servlet:
+    context-path: /api
+  port: 5000
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      #defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+      defaultZone: http://discovery-server:8761/eureka
+
+  instance:
+    preferIpAddress: true
+    hostname: enrollment-service-server
+
+keyStore:
+  path: keystore.jks
+  password: password

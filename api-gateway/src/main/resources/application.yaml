@@ -1,0 +1,75 @@
+
+spring:
+  application:
+    name: api-gateway
+  main:
+    web-application-type: reactive
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: auth-service-public
+          uri: lb://PERSON-IDENTITY-SERVICE
+          predicates:
+            - Path=/api/user/register, /api/user/login
+
+        - id: auth-service-authenticate
+          uri: lb://PERSON-IDENTITY-SERVICE
+          predicates:
+            - Path=/api/user/**
+          filters:
+            - name: AuthenticationPreFilter
+
+        - id: course
+          uri: lb://COURSE-SERVICE
+          predicates:
+            - Path=/api/course/**
+          filters:
+            - name: AuthenticationPreFilter
+
+        - id: enrollment
+          uri: lb://ENROLLMENT-SERVICE
+          predicates:
+            - Path=/api/enrollment/**
+          filters:
+            - name: AuthenticationPreFilter
+
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:4200"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - PATCH
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_UNIQUE
+
+server:
+  port: 4000
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://discovery-server:8761/eureka
+  instance:
+    preferIpAddress: true
+    hostname: gateway-service-server
+gateway:
+  excludedUrl: /api/user/register, /api/user/login
+
+keyStore:
+  path: keystore.jks
+  password: password
+  alias: auth-server
